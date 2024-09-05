@@ -39,14 +39,15 @@ app.layout = (
                             ]
                         ),
                     ]
-                )
+                ), 
+                dmc.AppShellMain(dash.page_container)
             ],
             header={"height": 85},
             zIndex=1400,
         ),
     ),
 )
-dash.page_container
+
 
 
 if __name__ == "__main__":
