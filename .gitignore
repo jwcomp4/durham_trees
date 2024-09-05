@@ -2,3 +2,5 @@ venv
 .ipynb_checkpoints
 .tok.rtf
 nan_trees.csv
+__pycache__/
+pages/__pycache__/
