@@ -13,7 +13,7 @@ app = dash.Dash(__name__, use_pages=True)
 server = app.server
 
 
-tree = pd.read_csv("tree.csv")
+
 
 app.layout = (
     dmc.MantineProvider(
