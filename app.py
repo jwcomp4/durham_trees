@@ -24,18 +24,12 @@ app.layout = (
                         dmc.Title(children=["Durham Trees"], order=1),
                         dmc.Menu(
                             [
-                                dmc.MenuTarget(
-                                    dmc.Burger(opened=False),
-                                ),
-                                dmc.MenuDropdown(
-                                    [
-                                        dmc.MenuItem(
-                                            f"{page['name']}",
-                                            href=page["relative_path"],
-                                        )
-                                        for page in dash.page_registry.values()
-                                    ]
-                                ),
+
+                                dmc.MenuItem(
+                                    f"{page['name']}",
+                                    href=page["relative_path"],
+                                )
+                                for page in dash.page_registry.values()
                             ]
                         ),
                     ]
