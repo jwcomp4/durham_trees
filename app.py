@@ -21,6 +21,7 @@ app.layout = (
                     children=[
                         dmc.Group(
                             [
+
                                 dmc.Menu(
                                     [
                                         dmc.MenuTarget(
@@ -42,7 +43,7 @@ app.layout = (
                         )
                     ], px=25
                 ),
-                dmc.AppShellMain(dash.page_container),
+                dmc.AppShellMain(dash.page_container)
             ],
             header={"height": 50},
             zIndex=1400,
