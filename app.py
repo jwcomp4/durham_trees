@@ -13,41 +13,42 @@ app = dash.Dash(__name__, use_pages=True)
 server = app.server
 
 
-
-
 app.layout = (
     dmc.MantineProvider(
         dmc.AppShell(
             [
                 dmc.AppShellHeader(
                     children=[
-                        dmc.Title(children=["Durham Trees"], order=1),
-                        dmc.Menu(
+                        dmc.Group(
                             [
-                                dmc.MenuTarget(
-                                    dmc.Burger(opened=False),
-                                ),
-                                dmc.MenuDropdown(
+                                dmc.Menu(
                                     [
-                                        dmc.MenuItem(
-                                            f"{page['name']}",
-                                            href=page["relative_path"],
-                                        )
-                                        for page in dash.page_registry.values()
+                                        dmc.MenuTarget(
+                                            dmc.Burger(opened=False),
+                                        ),
+                                        dmc.MenuDropdown(
+                                            [
+                                                dmc.MenuItem(
+                                                    f"{page['name']}",
+                                                    href=page["relative_path"],
+                                                )
+                                                for page in dash.page_registry.values()
+                                            ]
+                                        ),
                                     ]
                                 ),
-                            ]
-                        ),
-                    ]
-                ), 
-                dmc.AppShellMain(dash.page_container)
+                                dmc.Title(children=["Durham Trees"], order=1),
+                            ], justify='flex-start'
+                        )
+                    ], px=25
+                ),
+                dmc.AppShellMain(dash.page_container),
             ],
-            header={"height": 85},
+            header={"height": 50},
             zIndex=1400,
         ),
     ),
 )
-
 
 
 if __name__ == "__main__":
