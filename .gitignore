@@ -5,3 +5,4 @@ nan_trees.csv
 __pycache__/
 pages/__pycache__/
 .tok.txt
+.env

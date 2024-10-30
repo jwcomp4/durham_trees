@@ -1,10 +1,11 @@
 import dash
-from dash import dcc, html, callback, Input, Output, State
+from dash import dcc, html, callback, Input, Output, State, Patch
 import pandas as pd
 import dash_mantine_components as dmc
 import plotly.express as px
 import json
 from utils.data_utils import tree_clean
+from utils.app_utils import geocode_address
 
 dash.register_page(__name__, path="/")
 
@@ -33,7 +34,8 @@ def layout():
                                 ],
                                 value="Tree",
                             ),
-                            dmc.TextInput(label="Enter an Address"),
+                            dmc.TextInput(id='address', label="Enter an Address"),
+                            dmc.Button(id='address-submit', children="Submit Address")
                         ],
                         gap="xl",
                     )
@@ -71,7 +73,19 @@ def map_update(value):
         zoom=10,
         title="Map of Durham Trees",
     )
+
     return fig
+
+@callback(Output('tree-map', 'figure', allow_duplicate=True), State('address', 'value'), Input('address-submit', 'n_clicks'), prevent_initial_call=True)
+def change_map_center(address, click):
+    patch_map = Patch()
+    lat, lon = geocode_address(address)
+    patch_map['layout']['map']['center']['lat']=lat
+    patch_map['layout']['map']['center']['lon']=lon
+    patch_map['layout']['map']['zoom']=17
+    return patch_map
+    
+
 
 
 @callback(Output("data-div", "children"), Input("tree-map", "relayoutData"))
