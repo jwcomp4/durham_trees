@@ -3,35 +3,59 @@ from dash import dcc, html, callback, Input, Output, State
 import pandas as pd
 import dash_mantine_components as dmc
 import plotly.express as px
+import json
 from utils.data_utils import tree_clean
 
 dash.register_page(__name__, path="/")
 
 tree = pd.read_csv("tree.csv")
 
+style = {"border": f"1px solid {dmc.DEFAULT_THEME['colors']['indigo'][3]}"}
+
 
 def layout():
-    layout = dmc.Container(
+    layout = dmc.Space(h=30), dmc.Grid(
         [
-            dmc.Flex(
+            dmc.Space(w=20),
+            dmc.GridCol(
                 [
-                    dmc.TextInput(label="Enter an Address"),
-                    dmc.Select(
-                        label="Planted Trees or Planting Sites?",
-                        id="site-or-tree",
-                        data=[
-                            {"value": "Tree", "label": "Tree"},
-                            {"value": "Planting Site", "label": "Planting Site"},
+                    dmc.Stack(
+                        [
+                            dmc.Select(
+                                label="Planted Trees or Planting Sites?",
+                                id="site-or-tree",
+                                data=[
+                                    {"value": "Tree", "label": "Tree"},
+                                    {
+                                        "value": "Planting Site",
+                                        "label": "Planting Site",
+                                    },
+                                ],
+                                value="Tree",
+                            ),
+                            dmc.TextInput(label="Enter an Address"),
                         ],
-                    ),
-                    dmc.Container([dcc.Graph(id="tree-map")]),
+                        gap="xl",
+                    )
                 ],
-                align="center",
-                justify="flex-start",
-                gap={"base": "sm"},
-            )
-        ]
+                span=3,
+                style=style,
+            ),
+            dmc.GridCol(
+                [
+                    html.Div(
+                        id="graph-container",
+                        children=[dcc.Graph(id="tree-map")],
+                    ),
+                ],
+                span=7,
+            ),
+            dmc.GridCol([html.Div(id="data-div")], span=4),
+            dmc.GridCol([html.Div(id="data-click-div")], span=4),
+        ],
+        gutter="xl",
     )
+
     return layout
 
 
@@ -45,5 +69,16 @@ def map_update(value):
         map_style="carto-positron",
         hover_data=["genus", "species", "commonname", "diameterin", "plantingdate"],
         zoom=10,
+        title="Map of Durham Trees",
     )
     return fig
+
+
+@callback(Output("data-div", "children"), Input("tree-map", "relayoutData"))
+def map_zoom_data(relayout):
+    return json.dumps(relayout, indent=2)
+
+
+@callback(Output("data-click-div", "children"), Input("tree-map", "selectedData"))
+def map_zoom_data(select):
+    return json.dumps(select, indent=2)
