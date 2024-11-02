@@ -4,8 +4,9 @@ import pandas as pd
 import dash_mantine_components as dmc
 import plotly.express as px
 import json
-from utils.data_utils import tree_clean
-from utils.app_utils import geocode_address
+from utils.data_utils import tree_clean, click_tree_clean
+from utils.app_utils import geocode_address, make_card, card_icons
+from dash_iconify import DashIconify
 
 dash.register_page(__name__, path="/")
 
@@ -52,7 +53,7 @@ def layout():
                 ],
                 span=7,
             ),
-            dmc.GridCol([html.Div(id="data-div")], span=4),
+            dmc.GridCol([dmc.Stack(id='tree-card-stack')], span=4),
             dmc.GridCol([html.Div(id="data-click-div")], span=4),
         ],
         gutter="xl",
@@ -88,9 +89,18 @@ def change_map_center(address, click):
 
 
 
-@callback(Output("data-div", "children"), Input("tree-map", "relayoutData"))
-def map_zoom_data(relayout):
-    return json.dumps(relayout, indent=2)
+@callback(Output("tree-card-stack", "children"), State('site-or-tree', 'value'), Input("tree-map", "clickData"), prevent_initial_call = True)
+def map_click_data(value, click):
+    longitude = click['points'][0]['lon']
+    latitude = click['points'][0]['lat']
+    dff = click_tree_clean(value, tree, latitude, longitude)
+    common_name = make_card(card_icons['tree'],dff['commonname'].values[0])
+    clicked_diameter = make_card(card_icons['diameter'], dff['diameterin'].values[0])
+    planting_date = make_card(card_icons['date'],dff['plantingdate'].values[0])
+
+
+    
+    return [common_name, clicked_diameter, planting_date]
 
 
 @callback(Output("data-click-div", "children"), Input("tree-map", "selectedData"))
