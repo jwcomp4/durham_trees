@@ -5,7 +5,7 @@ import dash_mantine_components as dmc
 import plotly.express as px
 import json
 from utils.data_utils import tree_clean, click_tree_clean
-from utils.app_utils import geocode_address, make_card, card_icons
+from utils.app_utils import geocode_address, make_card, card_attribute
 from dash_iconify import DashIconify
 
 dash.register_page(__name__, path="/")
@@ -54,7 +54,7 @@ def layout():
                 span=7,
             ),
             dmc.GridCol([dmc.Stack(id='tree-card-stack')], span=4),
-            dmc.GridCol([html.Div(id="data-click-div")], span=4),
+            dmc.GridCol([dmc.Card(id="carbon-store-viz", withBorder=True, shadow='sm', radius='md')], span=6),
         ],
         gutter="xl",
     )
@@ -91,18 +91,21 @@ def change_map_center(address, click):
 
 @callback(Output("tree-card-stack", "children"), State('site-or-tree', 'value'), Input("tree-map", "clickData"), prevent_initial_call = True)
 def map_click_data(value, click):
-    longitude = click['points'][0]['lon']
-    latitude = click['points'][0]['lat']
-    dff = click_tree_clean(value, tree, latitude, longitude)
-    common_name = make_card(card_icons['tree'],dff['commonname'].values[0])
-    clicked_diameter = make_card(card_icons['diameter'], dff['diameterin'].values[0])
-    planting_date = make_card(card_icons['date'],dff['plantingdate'].values[0])
+    indexes = [x['pointIndex'] for x in click['points']]
+    dff = click_tree_clean(value, tree, indexes)
+    common_name = make_card(card_attribute['tree']['icon'],card_attribute['tree']['label'],dff['commonname'].values[0])
+    clicked_diameter = make_card(card_attribute['diameter']['icon'],card_attribute['diameter']['label'], dff['diameterin'].values[0])
+    planting_date = make_card(card_attribute['date']['icon'],card_attribute['date']['label'],dff['plantingdate'].values[0])
 
 
     
     return [common_name, clicked_diameter, planting_date]
 
 
-@callback(Output("data-click-div", "children"), Input("tree-map", "selectedData"))
-def map_zoom_data(select):
-    return json.dumps(select, indent=2)
+@callback(Output("carbon-store-viz", "children"), State('site-or-tree', 'value'), Input("tree-map", "selectedData"), prevent_inital_call=True)
+def map_zoom_data(value, select):
+    indexes = [x['pointIndex'] for x in select['points']]
+    dff = click_tree_clean(value, tree, indexes)
+    carbon_fig = dcc.Graph(figure=px.bar(dff, x="commonname", y="carbonstorage_lb", title="Carbon Storage of Selected Trees"))
+
+    return carbon_fig

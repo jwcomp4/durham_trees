@@ -21,18 +21,17 @@ def geocode_address(address):
     return lat, lon
 
 
-def make_card(icon, attribute):
+def make_card(icon, label, attribute):
     card = dmc.Card(
-        [dmc.Group([DashIconify(icon=icon, width=30), dmc.Text(attribute)])],
+        [dmc.Group([DashIconify(icon=icon, width=30), dmc.Text(label, fw=700)]), dmc.Text(attribute)],
         withBorder=True,
         shadow="sm",
         radius="md",
     )
     return card
 
-card_icons = {
-    "tree": "lucide:trees",
-    "diameter": "game-icons:measure-tape",
-    "date": "fluent:calendar-24-regular"
+card_attribute = {
+    "tree":{"icon":"lucide:trees", "label":"Common Name"},
+    "diameter": {"icon":"game-icons:measure-tape", "label":"Diameter (inches)"},
+    "date": {"icon":"fluent:calendar-24-regular", "label":"Planting Date"}
 }
-
